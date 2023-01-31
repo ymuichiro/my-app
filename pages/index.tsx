@@ -4,11 +4,10 @@ import { Inter } from "@next/font/google";
 import styles from "@/styles/Home.module.css";
 import { GetStaticProps } from "next/types";
 
-const inter = Inter({ subsets: ["latin"] });
-
 interface Props {
   locale: string;
   titles: string;
+  images: string[];
 }
 
 export default function Home(props: Props) {
@@ -29,101 +28,29 @@ export default function Home(props: Props) {
           <p>locale: {props.locale}</p>
           <p>locale: {props.titles}</p>
           <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{" "}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
             <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
+              src="/vercel.svg"
+              alt="Vercel Logo"
+              className={styles.vercelLogo}
+              width={100}
+              height={24}
               priority
             />
           </div>
         </div>
 
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
+        <div className={styles.center}>
+          {props.images.map((image, index) => (
+            <Image
+              className={styles.logo}
+              src={image}
+              alt="Next.js Logo"
+              width={180}
+              height={100}
+              priority
+              key={index}
+            />
+          ))}
         </div>
       </main>
     </>
@@ -131,16 +58,24 @@ export default function Home(props: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async ({ locale }) => {
-  const response = await fetch("https://cms.symbol-community.com/api/spaces", {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-  });
+  const response = await fetch(
+    "https://cms.symbol-community.com/api/news-releases?populate=*",
+    {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
   const json = await response.json();
   const titles = json.data.map((item: any) => item.attributes.title);
+  const images = json.data.map(
+    (item: any) =>
+      `https://cms.symbol-community.com${item.attributes.headerImage.data.attributes.url}`
+  );
   return {
     props: {
       locale: locale || "en",
       titles: titles.join(", "),
+      images: images,
     },
   };
 };
