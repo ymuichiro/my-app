@@ -8,6 +8,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 interface Props {
   locale: string;
+  titles: string;
 }
 
 export default function Home(props: Props) {
@@ -26,6 +27,7 @@ export default function Home(props: Props) {
             <code className={styles.code}>pages/index.tsx</code>
           </p>
           <p>locale: {props.locale}</p>
+          <p>locale: {props.titles}</p>
           <div>
             <a
               href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
@@ -129,9 +131,16 @@ export default function Home(props: Props) {
 }
 
 export const getStaticProps: GetStaticProps<Props> = async ({ locale }) => {
+  const response = await fetch("https://cms.symbol-community.com/api/spaces", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  const json = await response.json();
+  const titles = json.data.map((item: any) => item.attributes.title);
   return {
     props: {
       locale: locale || "en",
+      titles: titles.join(", "),
     },
   };
 };
