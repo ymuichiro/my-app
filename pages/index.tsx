@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "@/styles/Home.module.css";
 import { GetStaticProps } from "next/types";
+import MediaCard from "@/components/MediaCard";
 
 interface Props {
   locale: string;
@@ -27,14 +28,17 @@ export default function Home(props: Props) {
           <p>locale: {props.locale}</p>
           <p>locale: {props.titles}</p>
           <div>
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
+            {props.images.map((image, index) => {
+              return (
+                <MediaCard
+                  key={index}
+                  title={image}
+                  description={image}
+                  image={image}
+                  date={new Date().toString()}
+                />
+              );
+            })}
           </div>
         </div>
 
